@@ -1,15 +1,16 @@
 {
     "name": "ammonkc/ptpkg-api",
-    "type": "library",
-    "version": "0.1.0-dev",
     "description": "Ptpkg API v1 Client",
-    "homepage": "https://github.com/ammonkc/ptpkg-api",
+    "version": "0.1.0-dev",
+    "type": "library",
     "keywords": ["ptpkg", "panda", "api"],
     "license": "MIT",
+    "homepage": "https://github.com/ammonkc/ptpkg-api",
     "authors": [
         {
             "name": "Ammon Casey",
-            "email": "ammon@caseyohana.com"
+            "email": "ammon@caseyohana.com",
+            "role" : "Lead Developer"
         }
     ],
     "autoload": {
