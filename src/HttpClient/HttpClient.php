@@ -18,7 +18,7 @@ use Ammonkc\Ptpkg\Middleware\AuthMiddleware;
 class HttpClient implements HttpClientInterface
 {
     protected $options = [
-        'base_url'    => 'https://ptpkg.dev/',
+        'base_uri'    => 'https://ptpkg.dev/',
 
         'user_agent'  => 'ptpkg-api (http://github.com/ammonkc/ptpkg-api)',
         'timeout'     => 10,
@@ -41,7 +41,7 @@ class HttpClient implements HttpClientInterface
     public function __construct(array $options = [], ClientInterface $client = null)
     {
         $this->options = array_merge($this->options, $options);
-        $client = $client ?: new GuzzleClient($this->options['base_url'], $this->options);
+        $client = $client ?: new GuzzleClient($this->options, $this->options);
         $this->client  = $client;
 
         $this->clearHeaders();
