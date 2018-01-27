@@ -1,6 +1,6 @@
 <?php
 
-namespace Ptpkg\Api;
+namespace Ammonkc\Ptpkg\Api;
 
 /**
  * Api interface.

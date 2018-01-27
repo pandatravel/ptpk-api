@@ -1,10 +1,10 @@
 <?php
 
-namespace Ptpkg\Middleware;
+namespace Ammonkc\Ptpkg\Middleware;
 
 use Psr\Http\Message\RequestInterface;
-use Ptpkg\Client;
-use Ptpkg\Exception\RuntimeException;
+use Ammonkc\Ptpkg\Client;
+use Ammonkc\Ptpkg\Exception\RuntimeException;
 
 class AuthMiddleware
 {

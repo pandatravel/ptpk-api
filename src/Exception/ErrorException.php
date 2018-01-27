@@ -1,6 +1,6 @@
 <?php
 
-namespace Ptpkg\Exception;
+namespace Ammonkc\Ptpkg\Exception;
 
 /**
  * ErrorException.

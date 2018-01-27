@@ -1,8 +1,8 @@
 <?php
 
-namespace Ptpkg\Api;
+namespace Ammonkc\Ptpkg\Api;
 
-use Ptpkg\Exception\MissingArgumentException;
+use Ammonkc\Ptpkg\Exception\MissingArgumentException;
 
 /**
  * Listing tours, showing, and updating

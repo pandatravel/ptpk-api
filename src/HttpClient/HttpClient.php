@@ -1,14 +1,14 @@
 <?php
 
-namespace Ptpkg\HttpClient;
+namespace Ammonkc\Ptpkg\HttpClient;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Ptpkg\Exception\ErrorException;
-use Ptpkg\Exception\RuntimeException;
-use Ptpkg\Middleware\AuthMiddleware;
+use Ammonkc\Ptpkg\Exception\ErrorException;
+use Ammonkc\Ptpkg\Exception\RuntimeException;
+use Ammonkc\Ptpkg\Middleware\AuthMiddleware;
 
 /**
  * Performs requests on Ptpkg API

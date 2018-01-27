@@ -15,12 +15,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Ptpkg\\": "src"
+            "Ammonkc\\Ptpkg\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Ptpkg\\Tests\\": "tests"
+            "Ammonkc\\Ptpkg\\Tests\\": "tests"
         }
     },
     "require": {

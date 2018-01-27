@@ -1,9 +1,9 @@
 <?php
 
-namespace Ptpkg\HttpClient;
+namespace Ammonkc\Ptpkg\HttpClient;
 
-use Ptpkg\HttpClient\Cache\CacheInterface;
-use Ptpkg\HttpClient\Cache\FilesystemCache;
+use Ammonkc\Ptpkg\HttpClient\Cache\CacheInterface;
+use Ammonkc\Ptpkg\HttpClient\Cache\FilesystemCache;
 
 /**
  * Performs requests on GitHub API using If-Modified-Since headers.

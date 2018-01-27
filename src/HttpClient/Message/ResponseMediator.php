@@ -1,8 +1,8 @@
 <?php
 
-namespace Ptpkg\HttpClient\Message;
+namespace Ammonkc\Ptpkg\HttpClient\Message;
 
-use Ptpkg\Exception\ApiLimitExceedException;
+use Ammonkc\Ptpkg\Exception\ApiLimitExceedException;
 use Psr\Http\Message\ResponseInterface;
 
 class ResponseMediator

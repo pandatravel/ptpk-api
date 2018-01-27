@@ -1,10 +1,10 @@
 <?php
 
-namespace Ptpkg;
+namespace Ammonkc\Ptpkg;
 
-use Ptpkg\Exception\InvalidArgumentException;
-use Ptpkg\HttpClient\HttpClient;
-use Ptpkg\HttpClient\HttpClientInterface;
+use Ammonkc\Ptpkg\Exception\InvalidArgumentException;
+use Ammonkc\Ptpkg\HttpClient\HttpClient;
+use Ammonkc\Ptpkg\HttpClient\HttpClientInterface;
 
 /**
  * Simple PHP Ptpkg API client.

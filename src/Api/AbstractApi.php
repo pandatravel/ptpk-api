@@ -1,9 +1,9 @@
 <?php
 
-namespace Ptpkg\Api;
+namespace Ammonkc\Ptpkg\Api;
 
-use Ptpkg\Client;
-use Ptpkg\HttpClient\Message\ResponseMediator;
+use Ammonkc\Ptpkg\Client;
+use Ammonkc\Ptpkg\HttpClient\Message\ResponseMediator;
 
 /**
  * Abstract class for Api classes.

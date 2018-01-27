@@ -1,6 +1,6 @@
 <?php
 
-namespace Ptpkg\HttpClient\Cache;
+namespace Ammonkc\Ptpkg\HttpClient\Cache;
 
 use GuzzleHttp\Psr7\Response;
 
