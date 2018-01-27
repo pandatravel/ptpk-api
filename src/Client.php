@@ -179,7 +179,7 @@ class Client
     public function __call($endpoint, array $args)
     {
         if (!isset($this->endPoints[$endpoint])) {
-            $class = 'Ptpkg\Api\\' . ucfirst($endpoint);
+            $class = 'Ammonkc\\Ptpkg\Api\\' . ucfirst($endpoint);
             if (class_exists($class)) {
                 if (! empty($args)) {
                     $this->endPoints[$endpoint] = new $class($this, $args);

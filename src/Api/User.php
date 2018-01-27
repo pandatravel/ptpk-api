@@ -11,7 +11,7 @@ use Ammonkc\Ptpkg\Exception\MissingArgumentException;
  *
  * @author Ammon Casey <ammon@caseyohana.com>
  */
-class Users extends AbstractApi
+class User extends AbstractApi
 {
     /**
      * Endpoint
