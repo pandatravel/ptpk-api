@@ -36,13 +36,13 @@ class Client
      * Constant for authentication method. Indicates JSON Web Token
      * authentication required for integration access to the API.
      */
-    const AUTH_JWT = 'jwt';
+    const AUTH_JWT = 'jwt_token';
 
     /**
      * @var array
      */
     private $options = [
-        'base_url'    => 'https://ptpkg.dev/',
+        'base_uri'    => 'https://ptpkg.dev/',
 
         'user_agent'  => 'ptpkg-api (http://github.com/ammonkc/ptpkg-api)',
         'timeout'     => 10,
