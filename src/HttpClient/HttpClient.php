@@ -26,7 +26,11 @@ class HttpClient implements HttpClientInterface
         'api_limit'   => 5000,
         'api_version' => 'v1',
 
-        'cache_dir'   => null
+        'cache_dir'   => null,
+    ];
+
+    protected $requestOptions = [
+        'verify'     => false,
     ];
 
     protected $headers = [];
@@ -120,6 +124,7 @@ class HttpClient implements HttpClientInterface
     public function request($path, $body = null, $httpMethod = 'GET', array $headers = [], array $options = [])
     {
         $request = $this->createRequest($httpMethod, $path, $body, $headers);
+        $option = array_merge($this->requestOptions, $options);
 
         try {
             $response = $this->client->send($request, $options);
