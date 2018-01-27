@@ -119,10 +119,10 @@ class HttpClient implements HttpClientInterface
      */
     public function request($path, $body = null, $httpMethod = 'GET', array $headers = [], array $options = [])
     {
-        $request = $this->createRequest($httpMethod, $path, $body, $headers, $options);
+        $request = $this->createRequest($httpMethod, $path, $body, $headers);
 
         try {
-            $response = $this->client->send($request);
+            $response = $this->client->send($request, $options);
         } catch (\LogicException $e) {
             throw new ErrorException($e->getMessage(), $e->getCode(), $e);
         } catch (\RuntimeException $e) {
@@ -160,14 +160,13 @@ class HttpClient implements HttpClientInterface
         return $this->lastResponse;
     }
 
-    protected function createRequest($httpMethod, $path, $body = null, array $headers = [], array $options = [])
+    protected function createRequest($httpMethod, $path, $body = null, array $headers = [])
     {
-        $request = $this->client->createRequest(
+        $request = new Request(
             $httpMethod,
             $path,
             array_merge($this->headers, $headers),
-            $body,
-            $options
+            $body
         );
 
         return $request;
