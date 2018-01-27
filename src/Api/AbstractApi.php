@@ -49,6 +49,14 @@ abstract class AbstractApi implements ApiInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function getEndpoint()
+    {
+        return rtrim($this->endpoint_base, "/") . $this->endpoint;
+    }
+
+    /**
      * @return null|int
      */
     public function getPage()

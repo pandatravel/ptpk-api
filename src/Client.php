@@ -3,6 +3,7 @@
 namespace Ammonkc\Ptpkg;
 
 use Ammonkc\Ptpkg\Exception\InvalidArgumentException;
+use Ammonkc\Ptpkg\Exception\RuntimeException;
 use Ammonkc\Ptpkg\HttpClient\HttpClient;
 use Ammonkc\Ptpkg\HttpClient\HttpClientInterface;
 
