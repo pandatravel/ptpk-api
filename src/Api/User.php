@@ -27,7 +27,7 @@ class User extends AbstractApi
     }
 
     /**
-     * Get extended information about a tour by its id
+     * Get extended information about the authenticated user
      *
      * @link https://ptpkg.dev/api/v1/user/
      *
@@ -41,7 +41,7 @@ class User extends AbstractApi
     }
 
     /**
-     * Update tour information's by id. Requires authentication.
+     * Update user information's by id. Requires authentication.
      *
      * @link https://ptpkg.dev/api/v1/users/
      *
