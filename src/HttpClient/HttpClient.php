@@ -4,6 +4,7 @@ namespace Ammonkc\Ptpkg\HttpClient;
 
 use Ammonkc\Ptpkg\Exception\ErrorException;
 use Ammonkc\Ptpkg\Exception\RuntimeException;
+use Ammonkc\Ptpkg\HttpClient\Auth\Authenticator;
 use Ammonkc\Ptpkg\Middleware\AuthMiddleware;
 use Ammonkc\Ptpkg\Middleware\OAuth2Middleware;
 use GuzzleHttp\Client as GuzzleClient;
@@ -154,7 +155,8 @@ class HttpClient implements HttpClientInterface
      */
     public function oauth_authenticate($tokenOrLogin, $password = null, $method)
     {
-        $oauth = new OAuth2Middleware($tokenOrLogin, $password, $method);
+        // $oauth = new OAuth2Middleware($tokenOrLogin, $password, $method);
+        $oauth = new Authenticator($this->client, $tokenOrLogin, $password, null, $method);
         $this->client->getConfig('handler')->push($oauth);
     }
 

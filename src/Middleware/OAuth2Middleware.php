@@ -2,104 +2,58 @@
 
 namespace Ammonkc\Ptpkg\Middleware;
 
-use Ammonkc\Ptpkg\Client;
-use Ammonkc\Ptpkg\Exception\RuntimeException;
-use GuzzleHttp\Client as GuzzleClient;
-use League\OAuth2\Client\Provider\GenericProvider;
+use Assert\Assertion;
 use Psr\Http\Message\RequestInterface;
+use Somoza\OAuth2Middleware\TokenService\AuthorizesRequests;
 
+/**
+ * @author Ammon Casey <ammon@caseyohana.com>
+ */
 class OAuth2Middleware
 {
-    const AUTH_BEARER = 'Bearer %s';
-    const AUTH_TOKEN = 'token %s';
-    const AUTH_BASIC = 'Basic %s';
-    private $tokenOrLogin;
-    private $password;
-    private $username;
-    private $clientSecret;
-    private $method;
-    private $base_uri = 'https://ptpkg.dev/';
-    private $urlAuthorize;
-    private $urlAccesstoken;
-    private $urlResourceOwnerDetails;
-    private $oauthClient;
+    /** @var AuthorizesRequests */
+    public $tokenService;
 
-    public function __construct($tokenOrLogin, $password = null, $method)
+    /** @var string[] */
+    private $ignoredUris;
+
+    /**
+     * Middleware constructor.
+     * @param AuthorizesRequests $tokenService
+     * @param \string[] $ignoredUris
+     */
+    public function __construct(AuthorizesRequests $tokenService, array $ignoredUris = [])
     {
-        if (is_array($tokenOrLogin)) {
-            if ($method == Client::OAUTH_PASSWORD_CREDENTIALS) {
-                if (isset($tokenOrLogin['username'])) {
-                    $this->username = $tokenOrLogin['username'];
-                }
-                if (isset($tokenOrLogin['password'])) {
-                    $this->password = $tokenOrLogin['password'];
-                }
-                if (isset($tokenOrLogin['clientSecret'])) {
-                    $this->clientSecret = $tokenOrLogin['clientSecret'];
-                }
-                if (isset($tokenOrLogin['clientId'])) {
-                    $this->tokenOrLogin = $tokenOrLogin['clientId'];
-                }
-            }
-            if ($method == Client::OAUTH_CLIENT_CREDENTIALS) {
-                if (isset($tokenOrLogin['clientSecret'])) {
-                    $this->password = $tokenOrLogin['clientSecret'];
-                } elseif (isset($tokenOrLogin['password'])) {
-                    $this->password = $tokenOrLogin['password'];
-                }
-                if (isset($tokenOrLogin['clientId'])) {
-                    $this->tokenOrLogin = $tokenOrLogin['clientId'];
-                } elseif (isset($tokenOrLogin['username'])) {
-                    $this->tokenOrLogin = $tokenOrLogin['username'];
-                }
-            }
-        } else {
-            $this->tokenOrLogin = $tokenOrLogin;
-            $this->password = $password;
-            $this->method = $method;
-        }
-
-        $this->oauthClient = GuzzleClient(['verify' => false]);
-        $this->urlAuthorize = $this->base_uri . 'oauth/authorize';
-        $this->urlAccesstoken = $this->base_uri . 'oauth/token';
-        $this->urlResourceOwnerDetails = $this->base_uri . 'oauth/resource';
+        Assertion::allString($ignoredUris);
+        $this->ignoredUris = $ignoredUris;
+        $this->tokenService = $tokenService;
     }
 
-    public function __invoke(callable $handler)
+
+    /**
+     * @param callable $handler
+     * @return \Closure
+     */
+    public function __invoke(callable $handler): \Closure
     {
         return function (RequestInterface $request, array $options) use ($handler) {
-            switch ($this->method) {
-                case Client::OAUTH_ACCESS_TOKEN:
-                    $request = $request->withHeader('Authorization', sprintf(self::AUTH_BEARER, $this->tokenOrLogin));
-                    break;
-
-                case Client::OAUTH_CLIENT_CREDENTIALS:
-                    $provider = new GenericProvider([
-                        'clientId'                => $this->tokenOrLogin,    // The client ID assigned to you by the provider
-                        'clientSecret'            => $this->password,    // The client password assigned to you by the provider
-                        'urlAuthorize'            => $this->urlAuthorize,
-                        'urlAccessToken'          => $this->urlAccesstoken,
-                        'urlResourceOwnerDetails' => null,
-                    ], ['httpClient' => $this->oauthClient]);
-                    // Try to get an access token using the client credentials grant.
-                    $accessToken = $provider->getAccessToken('client_credentials');
-
-                    $request = $request->withHeader('Authorization', sprintf(self::AUTH_BEARER, $accessToken));
-                    break;
-
-                case Client::OAUTH_PASSWORD_CREDENTIALS:
-                    $request = $request->withHeader(
-                        'Authorization',
-                        sprintf(self::AUTH_BASIC, base64_encode($this->tokenOrLogin.':'.$this->password))
-                    );
-                    break;
-
-                default:
-                    throw new RuntimeException(sprintf('%s not yet implemented', $this->method));
-                    break;
+            $uri = (string) $request->getUri();
+            if (!$this->shouldSkipAuthorizationForUri($uri)) {
+                $request = $this->tokenService->authorize($request);
             }
 
             return $handler($request, $options);
         };
+    }
+
+    /**
+     * Returns whether a URL must NOT be authorized
+     *
+     * @param string $uri
+     * @return bool
+     */
+    private function shouldSkipAuthorizationForUri(string $uri): bool
+    {
+        return in_array($uri, $this->ignoredUris);
     }
 }
