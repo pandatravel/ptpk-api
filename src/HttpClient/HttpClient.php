@@ -2,13 +2,14 @@
 
 namespace Ammonkc\Ptpkg\HttpClient;
 
+use Ammonkc\Ptpkg\Exception\ErrorException;
+use Ammonkc\Ptpkg\Exception\RuntimeException;
+use Ammonkc\Ptpkg\Middleware\AuthMiddleware;
+use Ammonkc\Ptpkg\Middleware\OAuthMiddleware;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Ammonkc\Ptpkg\Exception\ErrorException;
-use Ammonkc\Ptpkg\Exception\RuntimeException;
-use Ammonkc\Ptpkg\Middleware\AuthMiddleware;
 
 /**
  * Performs requests on Ptpkg API
@@ -24,7 +25,6 @@ class HttpClient implements HttpClientInterface
         'timeout'     => 10,
 
         'api_limit'   => 5000,
-        'api_version' => 'v1',
 
         'cache_dir'   => null,
     ];
@@ -45,7 +45,7 @@ class HttpClient implements HttpClientInterface
     public function __construct(array $options = [], ClientInterface $client = null)
     {
         $this->options = array_merge($this->options, $options);
-        $client = $client ?: new GuzzleClient($this->options, $this->options);
+        $client = $client ?: new GuzzleClient($this->options);
         $this->client  = $client;
 
         $this->clearHeaders();
@@ -147,6 +147,15 @@ class HttpClient implements HttpClientInterface
     {
         $auth = new AuthMiddleware($tokenOrLogin, $password, $method);
         $this->client->getConfig('handler')->push($auth);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function oauth_authenticate($tokenOrLogin, $password = null, $method)
+    {
+        $oauth = new OAuthMiddleware($tokenOrLogin, $password, $method);
+        $this->client->getConfig('handler')->push($oauth);
     }
 
     /**

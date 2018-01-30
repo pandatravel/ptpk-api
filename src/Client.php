@@ -40,6 +40,24 @@ class Client
     const AUTH_JWT = 'jwt_token';
 
     /**
+     * Constant for authentication method. Indicates JSON Web Token
+     * authentication required for integration access to the API.
+     */
+    const OAUTH_CLIENT_CREDENTIALS = 'oauth_client';
+
+    /**
+     * Constant for authentication method. Indicates JSON Web Token
+     * authentication required for integration access to the API.
+     */
+    const OAUTH_PASSWORD_CREDENTIALS = 'oauth_password';
+
+    /**
+     * Constant for authentication method. Indicates JSON Web Token
+     * authentication required for integration access to the API.
+     */
+    const OAUTH_ACCESS_TOKEN = 'oauth_token';
+
+    /**
      * @var array
      */
     private $options = [
@@ -49,7 +67,6 @@ class Client
         'timeout'     => 10,
 
         'api_limit'   => 5000,
-        'api_version' => 'v1',
 
         'cache_dir'   => null
     ];
@@ -91,16 +108,26 @@ class Client
             throw new InvalidArgumentException('You need to specify authentication method!');
         }
 
-        if (null === $authMethod && in_array($password, [self::AUTH_HTTP_BASIC, self::AUTH_JWT, self::AUTH_HTTP_TOKEN])) {
+        if (null === $authMethod && in_array($password, [self::OAUTH_ACCESS_TOKEN, self::OAUTH_CLIENT_CREDENTIALS, self::OAUTH_PASSWORD_CREDENTIALS, self::AUTH_HTTP_BASIC, self::AUTH_JWT, self::AUTH_HTTP_TOKEN])) {
             $authMethod = $password;
             $password   = null;
         }
 
         if (null === $authMethod) {
-            $authMethod = self::AUTH_HTTP_BASIC;
+            if (is_array($tokenOrLogin) && isset($tokenOrLogin['method'])) {
+                $authMethod = $tokenOrLogin['method'];
+            } else {
+                $authMethod = self::AUTH_HTTP_BASIC;
+            }
         }
 
-        $this->getHttpClient()->authenticate($tokenOrLogin, $password, $authMethod);
+        if (in_array($authMethod, [self::AUTH_HTTP_BASIC, self::AUTH_JWT, self::AUTH_HTTP_TOKEN])) {
+            $this->getHttpClient()->authenticate($tokenOrLogin, $password, $authMethod);
+        }
+
+        if (in_array($authMethod, [self::OAUTH_ACCESS_TOKEN, self::OAUTH_CLIENT_CREDENTIALS, self::OAUTH_PASSWORD_CREDENTIALS])) {
+            $this->getHttpClient()->oauth_authenticate($tokenOrLogin, $password, $authMethod);
+        }
     }
 
     /**
