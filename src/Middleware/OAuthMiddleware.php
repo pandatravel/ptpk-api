@@ -7,9 +7,11 @@ use Ammonkc\Ptpkg\Exception\RuntimeException;
 use Ammonkc\Ptpkg\TokenService\PasswordCredentials;
 use GuzzleHttp\Client as GuzzleClient;
 use League\OAuth2\Client\Provider\GenericProvider;
+use Somoza\OAuth2Middleware\OAuth2Middleware;
 use Somoza\OAuth2Middleware\TokenService\Bearer;
 use kamermans\OAuth2\GrantType\ClientCredentials;
-use kamermans\OAuth2\OAuth2Middleware;
+
+// use kamermans\OAuth2\OAuth2Middleware;
 
 class OAuthMiddleware
 {
@@ -53,7 +55,7 @@ class OAuthMiddleware
         }
     }
 
-    public function __invoke()
+    public function getOauthMiddleware()
     {
         switch ($this->method) {
             case Client::OAUTH_ACCESS_TOKEN:
@@ -109,8 +111,8 @@ class OAuthMiddleware
                     new PasswordCredentials($provider, ['username' => $this->username, 'password' => $this->password]), // use the Bearer token type
                     [ // ignore (do not attempt to authorize) the following URLs
                         $provider->getBaseAuthorizationUrl(),
-                        $provider->getBaseAccessTokenUrl(),
-                        $provider->getResourceOwnerDetailsUrl(),
+                        // $provider->getBaseAccessTokenUrl(),
+                        // $provider->getResourceOwnerDetailsUrl(),
                     ]
                 );
 

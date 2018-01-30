@@ -5,11 +5,12 @@ namespace Ammonkc\Ptpkg\HttpClient;
 use Ammonkc\Ptpkg\Exception\ErrorException;
 use Ammonkc\Ptpkg\Exception\RuntimeException;
 use Ammonkc\Ptpkg\Middleware\AuthMiddleware;
-use Ammonkc\Ptpkg\Middleware\OAuthMiddleware;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use League\OAuth2\Client\Provider\GenericProvider;
+use Somoza\OAuth2Middleware\TokenService\Bearer;
 
 /**
  * Performs requests on Ptpkg API
@@ -154,7 +155,75 @@ class HttpClient implements HttpClientInterface
      */
     public function oauth_authenticate($tokenOrLogin, $password = null, $method)
     {
-        $oauth = new OAuthMiddleware($tokenOrLogin, $password, $method);
+        if (is_array($tokenOrLogin)) {
+            if ($method == Client::OAUTH_PASSWORD_CREDENTIALS) {
+                if (isset($tokenOrLogin['username'])) {
+                    $username = $tokenOrLogin['username'];
+                }
+                if (isset($tokenOrLogin['password'])) {
+                    $password = $tokenOrLogin['password'];
+                }
+            }
+            if ($method == Client::OAUTH_CLIENT_CREDENTIALS || $method == Client::OAUTH_PASSWORD_CREDENTIALS) {
+                if (isset($tokenOrLogin['client_secret'])) {
+                    $client_secret = $tokenOrLogin['client_secret'];
+                } elseif ($method == Client::OAUTH_CLIENT_CREDENTIALS && isset($tokenOrLogin['password'])) {
+                    $client_secret = $tokenOrLogin['password'];
+                }
+                if (isset($tokenOrLogin['client_id'])) {
+                    $tokenOrLogin = $tokenOrLogin['client_id'];
+                } elseif ($method == Client::OAUTH_CLIENT_CREDENTIALS && isset($tokenOrLogin['username'])) {
+                    $tokenOrLogin = $tokenOrLogin['username'];
+                }
+            }
+        }
+
+        $urlAuthorize = $this->options['base_uri'] . 'oauth/authorize';
+        $urlAccesstoken = $this->options['base_uri'] . 'oauth/token';
+        $urlResourceOwnerDetails = $this->options['base_uri'] . 'oauth/resource';
+
+        $provider = new GenericProvider([
+            'clientId' => $tokenOrLogin,
+            'clientSecret' => $client_secret,
+            'urlAuthorize' => $urlAuthorize,
+            'urlAccessToken' => $urlAccesstoken,
+            'urlResourceOwnerDetails' => $urlResourceOwnerDetails,
+        ]);
+
+        switch ($this->method) {
+            case Client::OAUTH_ACCESS_TOKEN:
+
+                break;
+
+            case Client::OAUTH_CLIENT_CREDENTIALS:
+                $oauth = new OAuth2Middleware(
+                    new Bearer($provider), // use the Bearer token type
+                    [ // ignore (do not attempt to authorize) the following URLs
+                        $provider->getBaseAuthorizationUrl(),
+                        // $provider->getBaseAccessTokenUrl(),
+                        $urlResourceOwnerDetails,
+                    ]
+                );
+
+                break;
+
+            case Client::OAUTH_PASSWORD_CREDENTIALS:
+                $oauth = new OAuth2Middleware(
+                    new PasswordCredentials($provider, ['username' => $username, 'password' => $password]), // use the Bearer token type
+                    [ // ignore (do not attempt to authorize) the following URLs
+                        $provider->getBaseAuthorizationUrl(),
+                        // $provider->getBaseAccessTokenUrl(),
+                        // $provider->getResourceOwnerDetailsUrl(),
+                    ]
+                );
+
+                break;
+
+            default:
+                throw new RuntimeException(sprintf('%s not yet implemented', $this->method));
+                break;
+        }
+
         $this->client->getConfig('handler')->push($oauth);
     }
 
