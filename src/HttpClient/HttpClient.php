@@ -9,8 +9,8 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use League\OAuth2\Client\Provider\GenericProvider;
-use Somoza\OAuth2Middleware\TokenService\Bearer;
+use kamermans\OAuth2\GrantType\ClientCredentials;
+use kamermans\OAuth2\OAuth2Middleware;
 
 /**
  * Performs requests on Ptpkg API
@@ -182,45 +182,35 @@ class HttpClient implements HttpClientInterface
         $urlAccesstoken = $this->options['base_uri'] . 'oauth/token';
         $urlResourceOwnerDetails = $this->options['base_uri'] . 'oauth/resource';
 
-        $provider = new GenericProvider([
-            'clientId' => $tokenOrLogin,
-            'clientSecret' => $client_secret,
-            'urlAuthorize' => $urlAuthorize,
-            'urlAccessToken' => $urlAccesstoken,
-            'urlResourceOwnerDetails' => $urlResourceOwnerDetails,
-        ]);
-
-        switch ($this->method) {
+        switch ($method) {
             case Client::OAUTH_ACCESS_TOKEN:
 
                 break;
 
             case Client::OAUTH_CLIENT_CREDENTIALS:
-                $oauth = new OAuth2Middleware(
-                    new Bearer($provider), // use the Bearer token type
-                    [ // ignore (do not attempt to authorize) the following URLs
-                        $provider->getBaseAuthorizationUrl(),
-                        // $provider->getBaseAccessTokenUrl(),
-                        $urlResourceOwnerDetails,
-                    ]
-                );
+                // Authorization client - this is used to request OAuth access tokens
+                $reauth_client = new GuzzleClient([
+                    // URL for access_token request
+                    'base_uri' => $urlAccesstoken,
+                    'verify' => false,
+                ]);
+                $reauth_config = [
+                    "client_id" => $tokenOrLogin,
+                    "client_secret" => $password,
+                    // "scope" => "your scope(s)", // optional
+                    // "state" => time(), // optional
+                ];
+                $grant_type = new ClientCredentials($reauth_client, $reauth_config);
+                $oauth = new OAuth2Middleware($grant_type);
 
                 break;
 
             case Client::OAUTH_PASSWORD_CREDENTIALS:
-                $oauth = new OAuth2Middleware(
-                    new PasswordCredentials($provider, ['username' => $username, 'password' => $password]), // use the Bearer token type
-                    [ // ignore (do not attempt to authorize) the following URLs
-                        $provider->getBaseAuthorizationUrl(),
-                        // $provider->getBaseAccessTokenUrl(),
-                        // $provider->getResourceOwnerDetailsUrl(),
-                    ]
-                );
 
                 break;
 
             default:
-                throw new RuntimeException(sprintf('%s not yet implemented', $this->method));
+                throw new RuntimeException(sprintf('%s not yet implemented', $method));
                 break;
         }
 
