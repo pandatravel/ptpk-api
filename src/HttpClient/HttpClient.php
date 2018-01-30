@@ -5,12 +5,11 @@ namespace Ammonkc\Ptpkg\HttpClient;
 use Ammonkc\Ptpkg\Exception\ErrorException;
 use Ammonkc\Ptpkg\Exception\RuntimeException;
 use Ammonkc\Ptpkg\Middleware\AuthMiddleware;
+use Ammonkc\Ptpkg\Middleware\OAuth2Middleware;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use kamermans\OAuth2\GrantType\ClientCredentials;
-use kamermans\OAuth2\OAuth2Middleware;
 
 /**
  * Performs requests on Ptpkg API
@@ -155,65 +154,7 @@ class HttpClient implements HttpClientInterface
      */
     public function oauth_authenticate($tokenOrLogin, $password = null, $method)
     {
-        if (is_array($tokenOrLogin)) {
-            if ($method == Client::OAUTH_PASSWORD_CREDENTIALS) {
-                if (isset($tokenOrLogin['username'])) {
-                    $username = $tokenOrLogin['username'];
-                }
-                if (isset($tokenOrLogin['password'])) {
-                    $password = $tokenOrLogin['password'];
-                }
-            }
-            if ($method == Client::OAUTH_CLIENT_CREDENTIALS || $method == Client::OAUTH_PASSWORD_CREDENTIALS) {
-                if (isset($tokenOrLogin['client_secret'])) {
-                    $client_secret = $tokenOrLogin['client_secret'];
-                } elseif ($method == Client::OAUTH_CLIENT_CREDENTIALS && isset($tokenOrLogin['password'])) {
-                    $client_secret = $tokenOrLogin['password'];
-                }
-                if (isset($tokenOrLogin['client_id'])) {
-                    $tokenOrLogin = $tokenOrLogin['client_id'];
-                } elseif ($method == Client::OAUTH_CLIENT_CREDENTIALS && isset($tokenOrLogin['username'])) {
-                    $tokenOrLogin = $tokenOrLogin['username'];
-                }
-            }
-        }
-
-        $urlAuthorize = $this->options['base_uri'] . 'oauth/authorize';
-        $urlAccesstoken = $this->options['base_uri'] . 'oauth/token';
-        $urlResourceOwnerDetails = $this->options['base_uri'] . 'oauth/resource';
-
-        switch ($method) {
-            case Client::OAUTH_ACCESS_TOKEN:
-
-                break;
-
-            case Client::OAUTH_CLIENT_CREDENTIALS:
-                // Authorization client - this is used to request OAuth access tokens
-                $reauth_client = new GuzzleClient([
-                    // URL for access_token request
-                    'base_uri' => $urlAccesstoken,
-                    'verify' => false,
-                ]);
-                $reauth_config = [
-                    "client_id" => $tokenOrLogin,
-                    "client_secret" => $password,
-                    // "scope" => "your scope(s)", // optional
-                    // "state" => time(), // optional
-                ];
-                $grant_type = new ClientCredentials($reauth_client, $reauth_config);
-                $oauth = new OAuth2Middleware($grant_type);
-
-                break;
-
-            case Client::OAUTH_PASSWORD_CREDENTIALS:
-
-                break;
-
-            default:
-                throw new RuntimeException(sprintf('%s not yet implemented', $method));
-                break;
-        }
-
+        $oauth = new OAuth2Middleware($tokenOrLogin, $password, $method);
         $this->client->getConfig('handler')->push($oauth);
     }
 

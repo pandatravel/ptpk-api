@@ -4,6 +4,7 @@ namespace Ammonkc\Ptpkg\Middleware;
 
 use Ammonkc\Ptpkg\Client;
 use Ammonkc\Ptpkg\Exception\RuntimeException;
+use GuzzleHttp\Client as GuzzleClient;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Http\Message\RequestInterface;
 
@@ -21,6 +22,7 @@ class OAuth2Middleware
     private $urlAuthorize;
     private $urlAccesstoken;
     private $urlResourceOwnerDetails;
+    private $oauthClient;
 
     public function __construct($tokenOrLogin, $password = null, $method)
     {
@@ -57,6 +59,7 @@ class OAuth2Middleware
             $this->method = $method;
         }
 
+        $this->oauthClient = GuzzleClient(['verify' => false]);
         $this->urlAuthorize = $this->base_uri . 'oauth/authorize';
         $this->urlAccesstoken = $this->base_uri . 'oauth/token';
         $this->urlResourceOwnerDetails = $this->base_uri . 'oauth/resource';
@@ -77,7 +80,7 @@ class OAuth2Middleware
                         'urlAuthorize'            => $this->urlAuthorize,
                         'urlAccessToken'          => $this->urlAccesstoken,
                         'urlResourceOwnerDetails' => null,
-                    ]);
+                    ], ['httpClient' => $this->oauthClient]);
                     // Try to get an access token using the client credentials grant.
                     $accessToken = $provider->getAccessToken('client_credentials');
 
