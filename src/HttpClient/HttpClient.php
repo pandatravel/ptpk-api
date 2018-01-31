@@ -10,6 +10,8 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Somoza\OAuth2Middleware\OAuth2Middleware;
+use Somoza\OAuth2Middleware\TokenService\Bearer;
 
 /**
  * Performs requests on Ptpkg API
@@ -143,18 +145,47 @@ class HttpClient implements HttpClientInterface
     /**
      * {@inheritDoc}
      */
+    public function getAccessToken($clientId, $clientSecret = null, $token = null, $method = null)
+    {
+        $auth = new Authenticator(guzzleClient($this->options), $clientId, $clientSecret, $token, $method);
+
+        return $auth->getAccessToken();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function authenticate($tokenOrLogin, $password = null, $method)
     {
         $auth = new AuthMiddleware($tokenOrLogin, $password, $method);
+
         $this->client->getConfig('handler')->push($auth);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function oauth_authenticate($tokenOrLogin, $password = null, $method)
+    public function oauth_authenticate($clientId, $clientSecret = null, $token = null, $method)
     {
-        $oauth = new OAuth2Middleware($tokenOrLogin, $password, $method);
+        // $oauth = new OAuth2Middleware($tokenOrLogin, $password, $method);
+        // $base_uri = $this->options['base_uri'];
+        // $accessToken = new AccessToken($token);
+        // $provider = new GenericProvider([
+        //     'clientId'                => $clientId,    // The client ID assigned to you by the provider
+        //     'clientSecret'            => $clientSecret,    // The client password assigned to you by the provider
+        //     'urlAuthorize'            => $base_uri . 'oauth/authorize',
+        //     'urlAccessToken'          => $base_uri . 'oauth/token',
+        //     'urlResourceOwnerDetails' => null,
+        // ], ['httpClient' => new guzzleClient($this->options)]);
+
+        // $oauth = new OAuth2Middleware(
+        //     new Bearer($provider, $accessToken)
+        // );
+
+        $auth = new Authenticator(guzzleClient($this->options), $clientId, $clientSecret, $token, $method);
+
+        $oauth = $auth->authenticate();
+
         $this->client->getConfig('handler')->push($oauth);
     }
 

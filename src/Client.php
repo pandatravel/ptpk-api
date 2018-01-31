@@ -4,7 +4,6 @@ namespace Ammonkc\Ptpkg;
 
 use Ammonkc\Ptpkg\Exception\InvalidArgumentException;
 use Ammonkc\Ptpkg\Exception\RuntimeException;
-use Ammonkc\Ptpkg\HttpClient\Auth\Authenticator;
 use Ammonkc\Ptpkg\HttpClient\HttpClient;
 use Ammonkc\Ptpkg\HttpClient\HttpClientInterface;
 
@@ -104,41 +103,40 @@ class Client
      *
      * @throws InvalidArgumentException If no authentication method was given
      */
-    public function authenticate($tokenOrLogin, $password = null, $authMethod = null)
+    public function authenticate($clientId, $clientSecret = null, $token = null, $authMethod = null)
     {
-        if (null === $password && null === $authMethod) {
+        if (null === $clientSecret && null === $token && null === $authMethod) {
             throw new InvalidArgumentException('You need to specify authentication method!');
         }
 
-        if (null === $authMethod && in_array($password, [self::OAUTH_ACCESS_TOKEN, self::OAUTH_CLIENT_CREDENTIALS, self::OAUTH_PASSWORD_CREDENTIALS, self::AUTH_HTTP_BASIC, self::AUTH_JWT, self::AUTH_HTTP_TOKEN])) {
-            $authMethod = $password;
-            $password   = null;
+        if (null === $authMethod && null === $token && in_array($clientSecret, [self::OAUTH_ACCESS_TOKEN, self::OAUTH_CLIENT_CREDENTIALS, self::OAUTH_PASSWORD_CREDENTIALS, self::AUTH_HTTP_BASIC, self::AUTH_JWT, self::AUTH_HTTP_TOKEN])) {
+            $authMethod = $clientSecret;
+            $clientSecret = null;
         }
 
         if (null === $authMethod) {
-            if (is_array($tokenOrLogin) && isset($tokenOrLogin['method'])) {
-                $authMethod = $tokenOrLogin['method'];
+            if (is_array($clientId) && isset($clientId['method'])) {
+                $authMethod = $clientId['method'];
             } else {
                 $authMethod = self::AUTH_HTTP_BASIC;
             }
         }
 
         if (in_array($authMethod, [self::AUTH_HTTP_BASIC, self::AUTH_JWT, self::AUTH_HTTP_TOKEN])) {
-            $this->getHttpClient()->authenticate($tokenOrLogin, $password, $authMethod);
+            $this->getHttpClient()->authenticate($clientId, $clientSecret, $authMethod);
         }
 
         if (in_array($authMethod, [self::OAUTH_ACCESS_TOKEN, self::OAUTH_CLIENT_CREDENTIALS, self::OAUTH_PASSWORD_CREDENTIALS])) {
-            $this->getHttpClient()->oauth_authenticate($tokenOrLogin, $password, $authMethod);
+            $this->getHttpClient()->oauth_authenticate($clientId, $clientSecret, $token, $authMethod);
         }
     }
 
     /**
      * @return HttpClient
      */
-    public function authenticateClientCredentials($clientId, $clientSecret = null, $token = null, $method = null)
+    public function authenticateClientCredentials($clientId, $clientSecret = null, $token = null, $method = self::OAUTH_CLIENT_CREDENTIALS)
     {
-        $auth = new Authenticator($clientId, $clientSecret, $token, $method);
-        $access_token = $auth->authorize();
+        $access_token = $this->getHttpClient()->getAccessToken($clientId, $clientSecret, $token, $method);
 
         return $access_token;
     }

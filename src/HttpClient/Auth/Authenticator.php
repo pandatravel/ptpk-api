@@ -3,7 +3,7 @@
 namespace Ammonkc\Ptpkg\HttpClient\Auth;
 
 use Ammonkc\Ptpkg\Client;
-use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\ClientInterface;
 use League\OAuth2\Client\Provider\GenericProvider;
 
 class Authenticator
@@ -18,7 +18,7 @@ class Authenticator
     protected $urlResourceOwnerDetails;
     protected $oauthClient;
 
-    public function __construct($clientId, $clientSecret = null, $token = null, $method = Client::OAUTH_CLIENT_CREDENTIALS)
+    public function __construct(ClientInterface $client = null, $clientId, $clientSecret = null, $token = null, $method = null)
     {
         if (is_array($clientId)) {
             if (isset($clientId['method'])) {
@@ -42,13 +42,31 @@ class Authenticator
         }
 
         $this->method = $method;
-        $this->oauthClient = new GuzzleClient(['verify' => false]);
+        $this->oauthClient = $client;
         $this->urlAuthorize = $this->base_uri . 'oauth/authorize';
         $this->urlAccesstoken = $this->base_uri . 'oauth/token';
         $this->urlResourceOwnerDetails = $this->base_uri . 'oauth/resource';
     }
 
-    public function authorize()
+    public function authenticate()
+    {
+        $accessToken = new AccessToken($this->token);
+        $provider = new GenericProvider([
+            'clientId'                => $this->clientId,    // The client ID assigned to you by the provider
+            'clientSecret'            => $this->clientSecret,    // The client password assigned to you by the provider
+            'urlAuthorize'            => $this->urlAuthorize,
+            'urlAccessToken'          => $this->urlAccesstoken,
+            'urlResourceOwnerDetails' => null,
+        ], ['httpClient' => $this->oauthClient]);
+
+        $oauth = new OAuth2Middleware(
+            new Bearer($provider, $accessToken)
+        );
+
+        return $oauth;
+    }
+
+    public function getAccessToken()
     {
         $provider = new GenericProvider([
             'clientId'                => $this->clientId,    // The client ID assigned to you by the provider
