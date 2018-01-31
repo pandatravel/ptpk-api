@@ -5,6 +5,9 @@ namespace Ammonkc\Ptpkg\HttpClient\Auth;
 use Ammonkc\Ptpkg\Client;
 use GuzzleHttp\ClientInterface;
 use League\OAuth2\Client\Provider\GenericProvider;
+use League\OAuth2\Client\Token\AccessToken;
+use Somoza\OAuth2Middleware\OAuth2Middleware;
+use Somoza\OAuth2Middleware\TokenService\Bearer;
 
 class Authenticator
 {
@@ -50,7 +53,7 @@ class Authenticator
 
     public function authenticate()
     {
-        $accessToken = new AccessToken($this->token);
+        $accessToken = new AccessToken(['access_token' => $this->token]);
         $provider = new GenericProvider([
             'clientId'                => $this->clientId,    // The client ID assigned to you by the provider
             'clientSecret'            => $this->clientSecret,    // The client password assigned to you by the provider

@@ -4,8 +4,8 @@ namespace Ammonkc\Ptpkg\HttpClient;
 
 use Ammonkc\Ptpkg\Exception\ErrorException;
 use Ammonkc\Ptpkg\Exception\RuntimeException;
+use Ammonkc\Ptpkg\HttpClient\Auth\Authenticator;
 use Ammonkc\Ptpkg\Middleware\AuthMiddleware;
-use Ammonkc\Ptpkg\Middleware\OAuth2Middleware;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
@@ -147,7 +147,7 @@ class HttpClient implements HttpClientInterface
      */
     public function getAccessToken($clientId, $clientSecret = null, $token = null, $method = null)
     {
-        $auth = new Authenticator(guzzleClient($this->options), $clientId, $clientSecret, $token, $method);
+        $auth = new Authenticator(new GuzzleClient($this->options), $clientId, $clientSecret, $token, $method);
 
         return $auth->getAccessToken();
     }
@@ -176,13 +176,13 @@ class HttpClient implements HttpClientInterface
         //     'urlAuthorize'            => $base_uri . 'oauth/authorize',
         //     'urlAccessToken'          => $base_uri . 'oauth/token',
         //     'urlResourceOwnerDetails' => null,
-        // ], ['httpClient' => new guzzleClient($this->options)]);
+        // ], ['httpClient' => new GuzzleClient($this->options)]);
 
         // $oauth = new OAuth2Middleware(
         //     new Bearer($provider, $accessToken)
         // );
 
-        $auth = new Authenticator(guzzleClient($this->options), $clientId, $clientSecret, $token, $method);
+        $auth = new Authenticator(new GuzzleClient($this->options), $clientId, $clientSecret, $token, $method);
 
         $oauth = $auth->authenticate();
 
