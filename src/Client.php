@@ -4,6 +4,7 @@ namespace Ammonkc\Ptpkg;
 
 use Ammonkc\Ptpkg\Exception\InvalidArgumentException;
 use Ammonkc\Ptpkg\Exception\RuntimeException;
+use Ammonkc\Ptpkg\HttpClient\Auth\Authenticator;
 use Ammonkc\Ptpkg\HttpClient\HttpClient;
 use Ammonkc\Ptpkg\HttpClient\HttpClientInterface;
 
@@ -88,8 +89,9 @@ class Client
      *
      * @param null|HttpClientInterface $httpClient Ptpkg http client
      */
-    public function __construct(HttpClientInterface $httpClient = null)
+    public function __construct(array $options = [], HttpClientInterface $httpClient = null)
     {
+        $this->options = array_merge($this->options, $options);
         $this->httpClient = $httpClient;
     }
 
@@ -128,6 +130,17 @@ class Client
         if (in_array($authMethod, [self::OAUTH_ACCESS_TOKEN, self::OAUTH_CLIENT_CREDENTIALS, self::OAUTH_PASSWORD_CREDENTIALS])) {
             $this->getHttpClient()->oauth_authenticate($tokenOrLogin, $password, $authMethod);
         }
+    }
+
+    /**
+     * @return HttpClient
+     */
+    public function authenticateClientCredentials($clientId, $clientSecret = null, $token = null, $method = null)
+    {
+        $auth = new Authenticator($clientId, $clientSecret, $token, $method);
+        $access_token = $auth->authorize();
+
+        return $access_token;
     }
 
     /**
