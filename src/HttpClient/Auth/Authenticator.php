@@ -21,7 +21,7 @@ class Authenticator
     protected $urlResourceOwnerDetails;
     protected $oauthClient;
 
-    public function __construct(ClientInterface $client = null, $clientId, $clientSecret = null, $token = null, $method = null)
+    public function __construct(ClientInterface $client = null, $clientId, $clientSecret = null, $token = null, $method = null, callable $tokenStore = null)
     {
         if (is_array($clientId)) {
             if (isset($clientId['method'])) {
@@ -45,6 +45,7 @@ class Authenticator
         }
 
         $this->method = $method;
+        $this->tokenStore = $tokenStore;
         $this->oauthClient = $client;
         $this->urlAuthorize = $this->base_uri . 'oauth/authorize';
         $this->urlAccesstoken = $this->base_uri . 'oauth/token';
@@ -54,6 +55,7 @@ class Authenticator
     public function authenticate()
     {
         $accessToken = new AccessToken(['access_token' => $this->token]);
+        $tokenStore = $this->tokenStore;
         $provider = new GenericProvider([
             'clientId'                => $this->clientId,    // The client ID assigned to you by the provider
             'clientSecret'            => $this->clientSecret,    // The client password assigned to you by the provider
@@ -63,7 +65,15 @@ class Authenticator
         ], ['httpClient' => $this->oauthClient]);
 
         $oauth = new OAuth2Middleware(
-            new Bearer($provider, $accessToken)
+            new Bearer(
+                $provider,
+                $accessToken,
+                function (AccessToken $newToken, AccessToken $oldToken) use ($tokenStore) {
+                    if (! is_null($tokenStore)) {
+                        $tokenStore->handleStoreAccessToken($newToken->jsonSerialize());
+                    }
+                }
+            )
         );
 
         return $oauth;

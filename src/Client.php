@@ -103,7 +103,7 @@ class Client
      *
      * @throws InvalidArgumentException If no authentication method was given
      */
-    public function authenticate($clientId, $clientSecret = null, $token = null, $authMethod = null)
+    public function authenticate($clientId, $clientSecret = null, $token = null, $authMethod = null, callable $tokenStore = null)
     {
         if (null === $clientSecret && null === $token && null === $authMethod) {
             throw new InvalidArgumentException('You need to specify authentication method!');
@@ -127,7 +127,7 @@ class Client
         }
 
         if (in_array($authMethod, [self::OAUTH_ACCESS_TOKEN, self::OAUTH_CLIENT_CREDENTIALS, self::OAUTH_PASSWORD_CREDENTIALS])) {
-            $this->getHttpClient()->oauth_authenticate($clientId, $clientSecret, $token, $authMethod);
+            $this->getHttpClient()->oauth_authenticate($clientId, $clientSecret, $token, $authMethod, $tokenStore);
         }
     }
 

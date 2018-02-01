@@ -165,7 +165,7 @@ class HttpClient implements HttpClientInterface
     /**
      * {@inheritDoc}
      */
-    public function oauth_authenticate($clientId, $clientSecret = null, $token = null, $method)
+    public function oauth_authenticate($clientId, $clientSecret = null, $token = null, $method, $tokenStore)
     {
         // $oauth = new OAuth2Middleware($tokenOrLogin, $password, $method);
         // $base_uri = $this->options['base_uri'];
@@ -182,7 +182,7 @@ class HttpClient implements HttpClientInterface
         //     new Bearer($provider, $accessToken)
         // );
 
-        $auth = new Authenticator(new GuzzleClient($this->options), $clientId, $clientSecret, $token, $method);
+        $auth = new Authenticator(new GuzzleClient($this->options), $clientId, $clientSecret, $token, $method, $tokenStore);
 
         $oauth = $auth->authenticate();
 
