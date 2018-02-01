@@ -19,7 +19,6 @@
         "guzzlehttp/guzzle": "^6.3",
         "guzzlehttp/psr7": "^1.2",
         "league/oauth2-client": "^2.3.0",
-        "kamermans/guzzle-oauth2-subscriber": "~1.0",
         "somoza/oauth2-client-middleware": "^0.3.0"
     },
     "require-dev": {

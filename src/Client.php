@@ -103,7 +103,7 @@ class Client
      *
      * @throws InvalidArgumentException If no authentication method was given
      */
-    public function authenticate($clientId, $clientSecret = null, $token = null, $authMethod = null, callable $tokenStore = null)
+    public function authenticate($clientId, $clientSecret = null, $token = null, $authMethod = null, $tokenStore = null)
     {
         if (null === $clientSecret && null === $token && null === $authMethod) {
             throw new InvalidArgumentException('You need to specify authentication method!');
