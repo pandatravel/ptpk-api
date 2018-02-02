@@ -57,6 +57,20 @@ class Tours extends AbstractApi
     }
 
     /**
+     * Get extended information about a tour by its id
+     *
+     * @link https://ptpkg.dev/api/v1/tours/
+     *
+     * @param int    $id         the tour number
+     *
+     * @return array information about the tour
+     */
+    public function showWp(int $id)
+    {
+        return $this->get($this->getEndpoint() . '/' . rawurlencode($id) . '/wp');
+    }
+
+    /**
      * Create a new tour
      *
      * @link https://ptpkg.dev/api/v1/tours/
