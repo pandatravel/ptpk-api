@@ -65,7 +65,7 @@ class Tours extends AbstractApi
      *
      * @return array information about the tour
      */
-    public function showWp(int $id)
+    public function show_wp(int $id)
     {
         return $this->get($this->getEndpoint() . '/' . rawurlencode($id) . '/wp');
     }
