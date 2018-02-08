@@ -28,6 +28,30 @@ class ResponseMediator
     /**
      * @param ResponseInterface $response
      *
+     * @return array|string
+     */
+    public static function getData(ResponseInterface $response)
+    {
+        $content = $this->getContent($response);
+
+        return $content['body'];
+    }
+
+    /**
+     * @param ResponseInterface $response
+     *
+     * @return array|string
+     */
+    public static function getCollection(ResponseInterface $response)
+    {
+        $collection = collect($this->getData($response));
+
+        return $collection;
+    }
+
+    /**
+     * @param ResponseInterface $response
+     *
      * @return array|null
      */
     public static function getPagination(ResponseInterface $response)
