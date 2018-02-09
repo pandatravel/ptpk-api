@@ -70,6 +70,7 @@ class HttpClient implements HttpClientInterface
     {
         $this->headers = [
             'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
             'User-Agent' => sprintf('%s', $this->options['user_agent']),
         ];
     }
