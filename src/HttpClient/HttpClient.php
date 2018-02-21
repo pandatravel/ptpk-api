@@ -8,7 +8,6 @@ use Ammonkc\Ptpkg\HttpClient\Auth\Authenticator;
 use Ammonkc\Ptpkg\Middleware\AuthMiddleware;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 
@@ -34,8 +33,6 @@ class HttpClient implements HttpClientInterface
 
     private $lastResponse;
     private $lastRequest;
-
-    private $errorResponse;
 
     /**
      * @param array           $options
@@ -76,14 +73,6 @@ class HttpClient implements HttpClientInterface
             'Content-Type' => 'application/json',
             'User-Agent' => sprintf('%s', $this->options['user_agent']),
         ];
-    }
-
-    /**
-     * @param bool $errorResponse
-     */
-    public function setErrorResponse($errorResponse = true)
-    {
-        $this->errorResponse = $errorResponse;
     }
 
     /**
@@ -135,11 +124,6 @@ class HttpClient implements HttpClientInterface
 
         try {
             $response = $this->client->send($request, $options);
-        } catch (ClientException $e) {
-            if ($this->errorResponse) {
-                return $e->getResponse();
-            }
-            throw new ClientException($e->getMessage(), $e->getRequest(), $e->getResponse(), $e);
         } catch (\LogicException $e) {
             throw new ErrorException($e->getMessage(), $e->getCode(), $e);
         } catch (\RuntimeException $e) {
