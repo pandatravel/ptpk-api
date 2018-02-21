@@ -210,6 +210,14 @@ class Client
     }
 
     /**
+     * @param bool $errorResponse
+     */
+    public function setErrorResponse($errorResponse = true)
+    {
+        $this->getHttpClient()->setErrorResponse($errorResponse);
+    }
+
+    /**
      * @param $endpoint
      * @param array $args
      * @return Endpoint\AbstractWpEndpoint
