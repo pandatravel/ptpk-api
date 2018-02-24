@@ -2,8 +2,6 @@
 
 namespace Ammonkc\Ptpkg\HttpClient;
 
-use Ammonkc\Ptpkg\Exception\ErrorException;
-use Ammonkc\Ptpkg\Exception\RuntimeException;
 use Ammonkc\Ptpkg\HttpClient\Auth\Authenticator;
 use Ammonkc\Ptpkg\Middleware\AuthMiddleware;
 use GuzzleHttp\Client as GuzzleClient;
@@ -124,10 +122,8 @@ class HttpClient implements HttpClientInterface
 
         try {
             $response = $this->client->send($request, $options);
-        } catch (\LogicException $e) {
-            throw new ErrorException($e->getMessage(), $e->getCode(), $e);
         } catch (\RuntimeException $e) {
-            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+            throw $e;
         }
 
         $this->lastRequest  = $request;
