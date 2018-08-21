@@ -1,10 +1,11 @@
 <?php
 
-namespace Ptpkg;
+namespace Ammonkc\Ptpkg;
 
-use Ptpkg\Exception\InvalidArgumentException;
-use Ptpkg\HttpClient\HttpClient;
-use Ptpkg\HttpClient\HttpClientInterface;
+use Ammonkc\Ptpkg\Exception\InvalidArgumentException;
+use Ammonkc\Ptpkg\Exception\RuntimeException;
+use Ammonkc\Ptpkg\HttpClient\HttpClient;
+use Ammonkc\Ptpkg\HttpClient\HttpClientInterface;
 
 /**
  * Simple PHP Ptpkg API client.
@@ -36,19 +37,36 @@ class Client
      * Constant for authentication method. Indicates JSON Web Token
      * authentication required for integration access to the API.
      */
-    const AUTH_JWT = 'jwt';
+    const AUTH_JWT = 'jwt_token';
+
+    /**
+     * Constant for authentication method. Indicates JSON Web Token
+     * authentication required for integration access to the API.
+     */
+    const OAUTH_CLIENT_CREDENTIALS = 'oauth_client';
+
+    /**
+     * Constant for authentication method. Indicates JSON Web Token
+     * authentication required for integration access to the API.
+     */
+    const OAUTH_PASSWORD_CREDENTIALS = 'oauth_password';
+
+    /**
+     * Constant for authentication method. Indicates JSON Web Token
+     * authentication required for integration access to the API.
+     */
+    const OAUTH_ACCESS_TOKEN = 'oauth_token';
 
     /**
      * @var array
      */
     private $options = [
-        'base_url'    => 'https://ptpkg.dev/',
+        'base_uri'    => 'https://ptpkg.com/',
 
         'user_agent'  => 'ptpkg-api (http://github.com/ammonkc/ptpkg-api)',
         'timeout'     => 10,
 
         'api_limit'   => 5000,
-        'api_version' => 'v1',
 
         'cache_dir'   => null
     ];
@@ -70,8 +88,9 @@ class Client
      *
      * @param null|HttpClientInterface $httpClient Ptpkg http client
      */
-    public function __construct(HttpClientInterface $httpClient = null)
+    public function __construct(array $options = [], HttpClientInterface $httpClient = null)
     {
+        $this->options = array_merge($this->options, $options);
         $this->httpClient = $httpClient;
     }
 
@@ -84,22 +103,42 @@ class Client
      *
      * @throws InvalidArgumentException If no authentication method was given
      */
-    public function authenticate($tokenOrLogin, $password = null, $authMethod = null)
+    public function authenticate($clientId, $clientSecret = null, $token = null, $authMethod = null, $tokenStore = null)
     {
-        if (null === $password && null === $authMethod) {
+        if (null === $clientSecret && null === $token && null === $authMethod) {
             throw new InvalidArgumentException('You need to specify authentication method!');
         }
 
-        if (null === $authMethod && in_array($password, [self::AUTH_HTTP_BASIC, self::AUTH_JWT, self::AUTH_HTTP_TOKEN])) {
-            $authMethod = $password;
-            $password   = null;
+        if (null === $authMethod && null === $token && in_array($clientSecret, [self::OAUTH_ACCESS_TOKEN, self::OAUTH_CLIENT_CREDENTIALS, self::OAUTH_PASSWORD_CREDENTIALS, self::AUTH_HTTP_BASIC, self::AUTH_JWT, self::AUTH_HTTP_TOKEN])) {
+            $authMethod = $clientSecret;
+            $clientSecret = null;
         }
 
         if (null === $authMethod) {
-            $authMethod = self::AUTH_HTTP_BASIC;
+            if (is_array($clientId) && isset($clientId['method'])) {
+                $authMethod = $clientId['method'];
+            } else {
+                $authMethod = self::AUTH_HTTP_BASIC;
+            }
         }
 
-        $this->getHttpClient()->authenticate($tokenOrLogin, $password, $authMethod);
+        if (in_array($authMethod, [self::AUTH_HTTP_BASIC, self::AUTH_JWT, self::AUTH_HTTP_TOKEN])) {
+            $this->getHttpClient()->authenticate($clientId, $clientSecret, $authMethod);
+        }
+
+        if (in_array($authMethod, [self::OAUTH_ACCESS_TOKEN, self::OAUTH_CLIENT_CREDENTIALS, self::OAUTH_PASSWORD_CREDENTIALS])) {
+            $this->getHttpClient()->oauth_authenticate($clientId, $clientSecret, $token, $authMethod, $tokenStore);
+        }
+    }
+
+    /**
+     * @return HttpClient
+     */
+    public function authenticateClientCredentials($clientId, $clientSecret = null, $token = null, $method = self::OAUTH_CLIENT_CREDENTIALS)
+    {
+        $access_token = $this->getHttpClient()->getAccessToken($clientId, $clientSecret, $token, $method);
+
+        return $access_token;
     }
 
     /**
@@ -178,7 +217,7 @@ class Client
     public function __call($endpoint, array $args)
     {
         if (!isset($this->endPoints[$endpoint])) {
-            $class = 'Ptpkg\Api\\' . ucfirst($endpoint);
+            $class = 'Ammonkc\\Ptpkg\Api\\' . ucfirst($endpoint);
             if (class_exists($class)) {
                 if (! empty($args)) {
                     $this->endPoints[$endpoint] = new $class($this, $args);

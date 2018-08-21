@@ -1,14 +1,13 @@
 <?php
 
-namespace Ptpkg\HttpClient;
+namespace Ammonkc\Ptpkg\HttpClient;
 
+use Ammonkc\Ptpkg\HttpClient\Auth\Authenticator;
+use Ammonkc\Ptpkg\Middleware\AuthMiddleware;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Ptpkg\Exception\ErrorException;
-use Ptpkg\Exception\RuntimeException;
-use Ptpkg\Middleware\AuthMiddleware;
 
 /**
  * Performs requests on Ptpkg API
@@ -18,15 +17,14 @@ use Ptpkg\Middleware\AuthMiddleware;
 class HttpClient implements HttpClientInterface
 {
     protected $options = [
-        'base_url'    => 'https://ptpkg.dev/',
+        'base_uri'    => 'https://ptpkg.com/',
 
         'user_agent'  => 'ptpkg-api (http://github.com/ammonkc/ptpkg-api)',
         'timeout'     => 10,
 
         'api_limit'   => 5000,
-        'api_version' => 'v1',
 
-        'cache_dir'   => null
+        'cache_dir'   => null,
     ];
 
     protected $headers = [];
@@ -41,7 +39,7 @@ class HttpClient implements HttpClientInterface
     public function __construct(array $options = [], ClientInterface $client = null)
     {
         $this->options = array_merge($this->options, $options);
-        $client = $client ?: new GuzzleClient($this->options['base_url'], $this->options);
+        $client = $client ?: new GuzzleClient($this->options);
         $this->client  = $client;
 
         $this->clearHeaders();
@@ -70,6 +68,7 @@ class HttpClient implements HttpClientInterface
     {
         $this->headers = [
             'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
             'User-Agent' => sprintf('%s', $this->options['user_agent']),
         ];
     }
@@ -119,14 +118,12 @@ class HttpClient implements HttpClientInterface
      */
     public function request($path, $body = null, $httpMethod = 'GET', array $headers = [], array $options = [])
     {
-        $request = $this->createRequest($httpMethod, $path, $body, $headers, $options);
+        $request = $this->createRequest($httpMethod, $path, $body, $headers);
 
         try {
-            $response = $this->client->send($request);
-        } catch (\LogicException $e) {
-            throw new ErrorException($e->getMessage(), $e->getCode(), $e);
+            $response = $this->client->send($request, $options);
         } catch (\RuntimeException $e) {
-            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+            throw $e;
         }
 
         $this->lastRequest  = $request;
@@ -138,10 +135,32 @@ class HttpClient implements HttpClientInterface
     /**
      * {@inheritDoc}
      */
+    public function getAccessToken($clientId, $clientSecret = null, $token = null, $method = null)
+    {
+        $auth = new Authenticator(new GuzzleClient($this->options), $clientId, $clientSecret, $token, $method);
+
+        return $auth->getAccessToken();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function authenticate($tokenOrLogin, $password = null, $method)
     {
         $auth = new AuthMiddleware($tokenOrLogin, $password, $method);
+
         $this->client->getConfig('handler')->push($auth);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function oauth_authenticate($clientId, $clientSecret = null, $token = null, $method, $tokenStore)
+    {
+        $auth = new Authenticator(new GuzzleClient($this->options), $clientId, $clientSecret, $token, $method, $tokenStore);
+        $oauth = $auth->authenticate();
+
+        $this->client->getConfig('handler')->push($oauth);
     }
 
     /**
@@ -160,14 +179,13 @@ class HttpClient implements HttpClientInterface
         return $this->lastResponse;
     }
 
-    protected function createRequest($httpMethod, $path, $body = null, array $headers = [], array $options = [])
+    protected function createRequest($httpMethod, $path, $body = null, array $headers = [])
     {
-        $request = $this->client->createRequest(
+        $request = new Request(
             $httpMethod,
             $path,
             array_merge($this->headers, $headers),
-            $body,
-            $options
+            $body
         );
 
         return $request;

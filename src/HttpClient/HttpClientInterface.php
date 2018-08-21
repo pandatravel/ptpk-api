@@ -1,8 +1,8 @@
 <?php
 
-namespace Ptpkg\HttpClient;
+namespace Ammonkc\Ptpkg\HttpClient;
 
-use Ptpkg\Exception\InvalidArgumentException;
+use Ammonkc\Ptpkg\Exception\InvalidArgumentException;
 use GuzzleHttp\Psr7\Response;
 
 /**

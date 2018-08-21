@@ -1,8 +1,8 @@
 <?php
 
-namespace Ptpkg\HttpClient\Message;
+namespace Ammonkc\Ptpkg\HttpClient\Message;
 
-use Ptpkg\Exception\ApiLimitExceedException;
+use Ammonkc\Ptpkg\Exception\ApiLimitExceedException;
 use Psr\Http\Message\ResponseInterface;
 
 class ResponseMediator
@@ -23,6 +23,30 @@ class ResponseMediator
         }
 
         return $body;
+    }
+
+    /**
+     * @param ResponseInterface $response
+     *
+     * @return array|string
+     */
+    public static function getData(ResponseInterface $response)
+    {
+        $content = $this->getContent($response);
+
+        return $content['body'];
+    }
+
+    /**
+     * @param ResponseInterface $response
+     *
+     * @return array|string
+     */
+    public static function getCollection(ResponseInterface $response)
+    {
+        $collection = collect($this->getData($response));
+
+        return $collection;
     }
 
     /**

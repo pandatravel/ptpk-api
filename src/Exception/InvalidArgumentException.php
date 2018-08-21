@@ -7,6 +7,6 @@ namespace Ammonkc\Ptpkg\Exception;
  *
  * @author Ammon Casey <ammon@caseyohana.com>
  */
-class ErrorException extends \ErrorException implements ExceptionInterface
+class InvalidArgumentException extends \InvalidArgumentException implements ExceptionInterface
 {
 }

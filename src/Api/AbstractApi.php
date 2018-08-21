@@ -1,9 +1,9 @@
 <?php
 
-namespace Ptpkg\Api;
+namespace Ammonkc\Ptpkg\Api;
 
-use Ptpkg\Client;
-use Ptpkg\HttpClient\Message\ResponseMediator;
+use Ammonkc\Ptpkg\Client;
+use Ammonkc\Ptpkg\HttpClient\Message\ResponseMediator;
 
 /**
  * Abstract class for Api classes.
@@ -46,6 +46,14 @@ abstract class AbstractApi implements ApiInterface
     public function __construct(Client $client)
     {
         $this->client = $client;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getEndpoint()
+    {
+        return rtrim($this->endpoint_base, "/") . $this->endpoint;
     }
 
     /**
@@ -165,8 +173,8 @@ abstract class AbstractApi implements ApiInterface
     {
         $response = $this->client->getHttpClient()->post(
             $path,
-            $requestHeaders,
-            $body
+            $body,
+            $requestHeaders
         );
 
         return ResponseMediator::getContent($response);
@@ -185,8 +193,8 @@ abstract class AbstractApi implements ApiInterface
     {
         $response = $this->client->getHttpClient()->patch(
             $path,
-            $requestHeaders,
-            $this->createJsonBody($parameters)
+            $this->createJsonBody($parameters),
+            $requestHeaders
         );
 
         return ResponseMediator::getContent($response);
@@ -205,8 +213,8 @@ abstract class AbstractApi implements ApiInterface
     {
         $response = $this->client->getHttpClient()->put(
             $path,
-            $requestHeaders,
-            $this->createJsonBody($parameters)
+            $this->createJsonBody($parameters),
+            $requestHeaders
         );
 
         return ResponseMediator::getContent($response);
@@ -225,8 +233,8 @@ abstract class AbstractApi implements ApiInterface
     {
         $response = $this->client->getHttpClient()->delete(
             $path,
-            $requestHeaders,
-            $this->createJsonBody($parameters)
+            $this->createJsonBody($parameters),
+            $requestHeaders
         );
 
         return ResponseMediator::getContent($response);

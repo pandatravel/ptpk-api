@@ -5,20 +5,20 @@ namespace Ammonkc\Ptpkg\Api;
 use Ammonkc\Ptpkg\Exception\MissingArgumentException;
 
 /**
- * Listing tours, showing, and updating
+ * Listing packages, showing, and updating
  *
- * @link   https://ptpkg.com/api/v1/tours/
+ * @link   https://ptpkg.com/api/v1/packages/
  *
  * @author Ammon Casey <ammon@caseyohana.com>
  */
-class Tours extends AbstractApi
+class Packages extends AbstractApi
 {
     /**
      * Endpoint
      *
      * @var string
      */
-    protected $endpoint = '/tours';
+    protected $endpoint = '/packages';
 
     /**
      * {@inheritdoc}
@@ -29,13 +29,13 @@ class Tours extends AbstractApi
     }
 
     /**
-     * List tours
+     * List packages
      *
-     * @link https://ptpkg.com/api/v1/tours/
+     * @link https://ptpkg.com/api/v1/packages/
      *
      * @param array  $params     the additional parameters
      *
-     * @return array list of tours found
+     * @return array list of packages found
      */
     public function all(array $params = [])
     {
@@ -45,7 +45,7 @@ class Tours extends AbstractApi
     /**
      * Get extended information about a tour by its id
      *
-     * @link https://ptpkg.com/api/v1/tours/
+     * @link https://ptpkg.com/api/v1/packages/
      *
      * @param int    $id         the tour number
      *
@@ -57,51 +57,9 @@ class Tours extends AbstractApi
     }
 
     /**
-     * Get extended information about a tour by its id
-     *
-     * @link https://ptpkg.com/api/v1/tours/
-     *
-     * @param int    $id         the tour number
-     *
-     * @return array information about the tour
-     */
-    public function show_wp(int $id)
-    {
-        return $this->get($this->getEndpoint() . '/' . rawurlencode($id) . '/wp');
-    }
-
-    /**
-     * Get status information about a tour by its id
-     *
-     * @link https://ptpkg.com/api/v1/tours/
-     *
-     * @param int    $id         the tour number
-     *
-     * @return array information about the tour
-     */
-    public function status(int $id)
-    {
-        return $this->get($this->getEndpoint() . '/' . rawurlencode($id) . '/status');
-    }
-
-    /**
-     * Get status information about a tour by its wp_id
-     *
-     * @link https://ptpkg.com/api/v1/tours/
-     *
-     * @param int    $id         the tour number
-     *
-     * @return array information about the tour
-     */
-    public function status_wp(int $id)
-    {
-        return $this->get($this->getEndpoint() . '/' . rawurlencode($id) . '/status/wp');
-    }
-
-    /**
      * Create a new tour
      *
-     * @link https://ptpkg.com/api/v1/tours/
+     * @link https://ptpkg.com/api/v1/packages/
      *
      * @param array  $params     the new tour data
      *
@@ -117,7 +75,7 @@ class Tours extends AbstractApi
     /**
      * Update tour information's by id. Requires authentication.
      *
-     * @link https://ptpkg.com/api/v1/tours/
+     * @link https://ptpkg.com/api/v1/packages/
      *
      * @param int    $id         the issue number
      * @param array  $params     key=>value user attributes to update.
