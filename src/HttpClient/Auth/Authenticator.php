@@ -15,7 +15,7 @@ class Authenticator
     protected $clientSecret;
     protected $token;
     protected $method;
-    protected $base_uri = 'https://ptpkg.dev/';
+    protected $base_uri = 'https://ptpkg.com/';
     protected $urlAuthorize;
     protected $urlAccesstoken;
     protected $urlResourceOwnerDetails;

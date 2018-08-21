@@ -61,7 +61,7 @@ class Client
      * @var array
      */
     private $options = [
-        'base_uri'    => 'https://ptpkg.dev/',
+        'base_uri'    => 'https://ptpkg.com/',
 
         'user_agent'  => 'ptpkg-api (http://github.com/ammonkc/ptpkg-api)',
         'timeout'     => 10,

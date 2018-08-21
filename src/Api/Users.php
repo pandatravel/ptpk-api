@@ -7,7 +7,7 @@ use Ammonkc\Ptpkg\Exception\MissingArgumentException;
 /**
  * Listing users, showing, and updating.
  *
- * @link   https://ptpkg.dev/api/v1/users/
+ * @link   https://ptpkg.com/api/v1/users/
  *
  * @author Ammon Casey <ammon@caseyohana.com>
  */
@@ -23,7 +23,7 @@ class Users extends AbstractApi
     /**
      * List users
      *
-     * @link https://ptpkg.dev/api/v1/users/
+     * @link https://ptpkg.com/api/v1/users/
      *
      * @param array  $params     the additional parameters
      *
@@ -37,7 +37,7 @@ class Users extends AbstractApi
     /**
      * Get extended information about a tour by its id
      *
-     * @link https://ptpkg.dev/api/v1/users/
+     * @link https://ptpkg.com/api/v1/users/
      *
      * @param int    $id         the tour number
      *
@@ -51,7 +51,7 @@ class Users extends AbstractApi
     /**
      * Create a new tour
      *
-     * @link https://ptpkg.dev/api/v1/users/
+     * @link https://ptpkg.com/api/v1/users/
      *
      * @param array  $params     the new tour data
      *
@@ -67,7 +67,7 @@ class Users extends AbstractApi
     /**
      * Update tour information's by id. Requires authentication.
      *
-     * @link https://ptpkg.dev/api/v1/users/
+     * @link https://ptpkg.com/api/v1/users/
      *
      * @param int    $id         the issue number
      * @param array  $params     key=>value user attributes to update.
