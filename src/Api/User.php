@@ -5,7 +5,7 @@ namespace Ammonkc\Ptpkg\Api;
 /**
  * Listing users, showing, and updating
  *
- * @link   https://ptpkg.dev/api/v1/users/
+ * @link   https://ptpkg.com/api/v1/users/
  *
  * @author Ammon Casey <ammon@caseyohana.com>
  */
@@ -29,7 +29,7 @@ class User extends AbstractApi
     /**
      * Get extended information about the authenticated user
      *
-     * @link https://ptpkg.dev/api/v1/user/
+     * @link https://ptpkg.com/api/v1/user/
      *
      * @param int    $id         the tour number
      *
@@ -43,7 +43,7 @@ class User extends AbstractApi
     /**
      * Update user information's by id. Requires authentication.
      *
-     * @link https://ptpkg.dev/api/v1/users/
+     * @link https://ptpkg.com/api/v1/users/
      *
      * @param int    $id         the issue number
      * @param array  $params     key=>value user attributes to update.
