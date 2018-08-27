@@ -16,5 +16,5 @@ composer require ammonkc/ptpkg-api dev-master
 
 ### License
 
-This project is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+The PTPkg project is closed-sourced software and is UNLICENSED.
 
