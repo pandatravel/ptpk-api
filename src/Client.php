@@ -63,7 +63,7 @@ class Client
     private $options = [
         'base_uri'    => 'https://ptpkg.com/',
 
-        'user_agent'  => 'ptpkg-api (http://github.com/ammonkc/ptpkg-api)',
+        'user_agent'  => 'ptpkg-api (https://github.com/pandatravel/ptpk-api)',
         'timeout'     => 10,
 
         'api_limit'   => 5000,
