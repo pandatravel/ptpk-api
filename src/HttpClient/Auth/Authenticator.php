@@ -15,7 +15,7 @@ class Authenticator
     protected $clientSecret;
     protected $token;
     protected $method;
-    protected $base_uri = 'https://ptpkg.com/';
+    protected $base_uri;
     protected $urlAuthorize;
     protected $urlAccesstoken;
     protected $urlResourceOwnerDetails;
@@ -47,6 +47,7 @@ class Authenticator
         $this->method = $method;
         $this->tokenStore = $tokenStore;
         $this->oauthClient = $client;
+        $this->base_uri = (string) $client->getConfig('base_uri');
         $this->urlAuthorize = $this->base_uri . 'oauth/authorize';
         $this->urlAccesstoken = $this->base_uri . 'oauth/token';
         $this->urlResourceOwnerDetails = $this->base_uri . 'oauth/resource';
