@@ -1,7 +1,7 @@
 {
     "name": "ammonkc/ptpkg-api",
     "description": "Ptpkg API v1 Client",
-    "version": "0.2.4",
+    "version": "1.0.0",
     "type": "library",
     "keywords": ["ptpkg", "panda", "api"],
     "license": "UNLICENSED",
