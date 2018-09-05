@@ -1,7 +1,7 @@
 {
     "name": "ammonkc/ptpkg-api",
     "description": "Ptpkg API v1 Client",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "type": "library",
     "keywords": ["ptpkg", "panda", "api"],
     "license": "UNLICENSED",
@@ -19,8 +19,7 @@
         "guzzlehttp/guzzle": "^6.3",
         "guzzlehttp/psr7": "^1.2",
         "league/oauth2-client": "^2.3.0",
-        "somoza/oauth2-client-middleware": "^0.3.0",
-        "tightenco/collect": "^5.6"
+        "somoza/oauth2-client-middleware": "^0.3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.2",
