@@ -19,10 +19,10 @@
         "guzzlehttp/guzzle": "^6.3",
         "guzzlehttp/psr7": "^1.2",
         "league/oauth2-client": "^2.3.0",
-        "somoza/oauth2-client-middleware": "^0.3.0"
+        "somoza/oauth2-client-middleware": "^0.2.6"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.2",
+        "phpunit/phpunit": "^5.7",
         "symfony/var-dumper": "^3.4"
     },
     "autoload": {
