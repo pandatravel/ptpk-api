@@ -6,8 +6,7 @@ use Ammonkc\Ptpkg\Client;
 use GuzzleHttp\ClientInterface;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
-use Somoza\OAuth2Middleware\OAuth2Middleware;
-use Somoza\OAuth2Middleware\TokenService\Bearer;
+use Somoza\Psr7\OAuth2Middleware;
 
 class Authenticator
 {
@@ -64,16 +63,14 @@ class Authenticator
             'urlResourceOwnerDetails' => null,
         ], ['httpClient' => $this->oauthClient]);
 
-        $oauth = new OAuth2Middleware(
-            new Bearer(
-                $provider,
-                $this->token,
-                function (AccessToken $newToken, AccessToken $oldToken) use ($tokenStore) {
-                    if (! is_null($tokenStore)) {
-                        $tokenStore->handleStoreAccessToken($newToken->jsonSerialize());
-                    }
+        $oauth = new OAuth2Middleware\Bearer(
+            $provider,
+            $this->token,
+            function (AccessToken $newToken) use ($tokenStore) {
+                if (! is_null($tokenStore)) {
+                    $tokenStore->handleStoreAccessToken($newToken->jsonSerialize());
                 }
-            )
+            }
         );
 
         return $oauth;
