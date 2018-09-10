@@ -1,3 +1,5 @@
+## 1.0.3
+- updated authentication code to work with somoza/oauth2-client-middleware v0.2.6 for php5.6 compatibility
 ## 1.0.2
 - Build for PHP 5.6.37
 - All package dependecies are php 5.6 compatible
