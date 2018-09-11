@@ -1,3 +1,5 @@
+## 1.0.4
+- Removed some type hints for php5.6 compatibility
 ## 1.0.3
 - updated authentication code to work with somoza/oauth2-client-middleware v0.2.6 for php5.6 compatibility
 ## 1.0.2
