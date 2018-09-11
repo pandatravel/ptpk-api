@@ -51,7 +51,7 @@ class Packages extends AbstractApi
      *
      * @return array information about the tour
      */
-    public function show(int $id)
+    public function show($id)
     {
         return $this->get($this->getEndpoint() . '/' . rawurlencode($id));
     }
@@ -83,7 +83,7 @@ class Packages extends AbstractApi
      *
      * @return array information about the issue
      */
-    public function update(int $id, array $params)
+    public function update($id, array $params)
     {
         return $this->patch($this->getEndpoint() . '/' . rawurlencode($id), $params);
     }

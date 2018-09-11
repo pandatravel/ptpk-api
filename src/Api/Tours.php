@@ -51,7 +51,7 @@ class Tours extends AbstractApi
      *
      * @return array information about the tour
      */
-    public function show(int $id)
+    public function show($id)
     {
         return $this->get($this->getEndpoint() . '/' . rawurlencode($id));
     }
@@ -65,7 +65,7 @@ class Tours extends AbstractApi
      *
      * @return array information about the tour
      */
-    public function show_wp(int $id)
+    public function show_wp($id)
     {
         return $this->get($this->getEndpoint() . '/' . rawurlencode($id) . '/wp');
     }
@@ -79,7 +79,7 @@ class Tours extends AbstractApi
      *
      * @return array information about the tour
      */
-    public function status(int $id)
+    public function status($id)
     {
         return $this->get($this->getEndpoint() . '/' . rawurlencode($id) . '/status');
     }
@@ -93,7 +93,7 @@ class Tours extends AbstractApi
      *
      * @return array information about the tour
      */
-    public function status_wp(int $id)
+    public function status_wp($id)
     {
         return $this->get($this->getEndpoint() . '/' . rawurlencode($id) . '/status/wp');
     }
@@ -125,7 +125,7 @@ class Tours extends AbstractApi
      *
      * @return array information about the issue
      */
-    public function update(int $id, array $params)
+    public function update($id, array $params)
     {
         return $this->patch($this->getEndpoint() . '/' . rawurlencode($id), $params);
     }
